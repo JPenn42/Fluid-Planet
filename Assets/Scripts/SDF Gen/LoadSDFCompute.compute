@@ -1,0 +1,23 @@
+#pragma kernel CSMain
+
+StructuredBuffer<float> Data;
+RWTexture3D<float4> VolumeTex;
+uint sizeX;
+uint sizeY;
+uint sizeZ;
+
+
+
+uint GetFlatIndex(int3 coord, uint sizeX, uint sizeY, uint sizeZ)
+{
+    return coord.x + (coord.y * sizeX) + (coord.z * sizeX * sizeY);
+}
+
+[numthreads(8,8,8)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= sizeX | id.y >= sizeY || id.z >= sizeZ) return;
+
+    uint index = GetFlatIndex(id, sizeX, sizeY, sizeZ);
+    VolumeTex[id] = Data[index];
+}
