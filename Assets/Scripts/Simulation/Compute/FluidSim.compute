@@ -104,21 +104,31 @@ const float3 relativeAcc;
 static const float GravitationalConstant = 1;
 const bool firstBodyUseSDF;
 const bool useRelativeAcc;
+const bool useGravSim;
 
 float3 GravitationalAccelerationAtPoint(float3 pos, uint ignoreSelfBodyIndex)
 {
     float3 totalAcc = 0;
-
-    for (uint i = 0; i < CelestialBodyCount; i++)
+    if (!useGravSim)
     {
-        if (i == ignoreSelfBodyIndex) continue;
-        CelestialBody otherBody = CelestialBodies[i];
-        float3 offsetToOther = (otherBody.pos - pos);
-        float sqrDst = dot(offsetToOther, offsetToOther);
-        float3 acc = normalize(offsetToOther) * GravitationalConstant * otherBody.mass / sqrDst;
-        totalAcc += acc;
+        totalAcc.y = -9.8;
     }
+    else
+    {
+    
+        
 
+        for (uint i = 0; i < CelestialBodyCount; i++)
+        {
+            if (i == ignoreSelfBodyIndex)
+                continue;
+            CelestialBody otherBody = CelestialBodies[i];
+            float3 offsetToOther = (otherBody.pos - pos);
+            float sqrDst = dot(offsetToOther, offsetToOther);
+            float3 acc = normalize(offsetToOther) * GravitationalConstant * otherBody.mass / sqrDst;
+            totalAcc += acc;
+        }
+    }
     return totalAcc;
 }
 

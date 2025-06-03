@@ -61,8 +61,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - FlatBlend: 0.147
-    - FlatThreshold: 0.7
+    - FlatBlend: 0.14
+    - FlatThreshold: 0.884
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -86,12 +86,12 @@ Material:
     - noiseStr: 0.13
     - shadePow: 2
     m_Colors:
-    - ColAmbient: {r: 0, g: 0, b: 0, a: 1}
-    - ColFlat: {r: 1, g: 1, b: 1, a: 1}
+    - ColAmbient: {r: 0.2981131, g: 0.16839693, b: 0.07593444, a: 1}
+    - ColFlat: {r: 0, g: 0.6075471, b: 0.03375263, a: 1}
     - ColFlat2: {r: 0.23584908, g: 0.08656725, b: 0.010012457, a: 1}
-    - ColFlatDeep: {r: 1, g: 1, b: 1, a: 1}
-    - ColSteep: {r: 1, g: 1, b: 1, a: 1}
-    - ColSteepDeep: {r: 1, g: 1, b: 1, a: 1}
+    - ColFlatDeep: {r: 0.2981131, g: 0.2981131, b: 0.2981131, a: 1}
+    - ColSteep: {r: 0.4867924, g: 0.27698046, b: 0.16073328, a: 1}
+    - ColSteepDeep: {r: 0.2528302, g: 0.2528302, b: 0.2528302, a: 1}
     - HeightShadParams: {r: 18, g: 25, b: 29.54, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

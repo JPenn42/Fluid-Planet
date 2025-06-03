@@ -14,6 +14,7 @@ namespace Seb.Fluid.Simulation
 		public event Action<float> FluidStep;
 
 		[Header("Planet Test Settings")]
+		public bool useGravSim = true;
 		public GravitySim gravitySim;
 		public bool terraformTest;
 		public bool useEarthSDF = true;
@@ -406,6 +407,7 @@ namespace Seb.Fluid.Simulation
 			compute.SetVector("relativeAcc", gravitySim.relativeAcc);
 			compute.SetBool("useRelativeAcc", gravitySim.relative);
 			compute.SetBool("firstBodyUseSDF", useEarthSDF);
+			compute.SetBool("useGravSim", useGravSim);
 			compute.SetFloat("sdfCollisionSkin", sdfCollisionSkin);
 
 			// Body 0
