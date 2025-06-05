@@ -18,6 +18,7 @@ namespace Seb.Fluid.Simulation
 		public GravitySim gravitySim;
 		public bool terraformTest;
 		public bool useEarthSDF = true;
+		public bool boundToSDF;
 		public LoadSDF sdfLoader;
 		public TerrainCreator terrainCreator;
 		public float sdfCollisionSkin;
@@ -128,8 +129,15 @@ namespace Seb.Fluid.Simulation
 			foamSortTargetBuffer = CreateStructuredBuffer<FoamParticle>(maxFoamParticleCount);
 			foamCountBuffer = CreateStructuredBuffer<uint>(4096);
 			debugBuffer = CreateStructuredBuffer<float3>(numParticles);
+			if (gravitySim != null)
+			{
+				celestialBodyBuffer = CreateStructuredBuffer<GravitySim.Body>(gravitySim.bodies.Length);
+			}
+			else
+			{ 
+				celestialBodyBuffer = CreateStructuredBuffer<GravitySim.Body>(1);
+			}
 
-			celestialBodyBuffer = CreateStructuredBuffer<GravitySim.Body>(gravitySim.bodies.Length);
 			sortTarget_positionBuffer = CreateStructuredBuffer<float3>(numParticles);
 			sortTarget_predictedPositionsBuffer = CreateStructuredBuffer<float3>(numParticles);
 			sortTarget_velocityBuffer = CreateStructuredBuffer<float3>(numParticles);
@@ -337,8 +345,10 @@ namespace Seb.Fluid.Simulation
 			{
 				FluidStep?.Invoke(subStepDeltaTime);
 				simTimer += subStepDeltaTime;
-
-				gravitySim.Step(subStepDeltaTime);
+                if (useGravSim)
+				{
+					gravitySim.Step(subStepDeltaTime);
+				}
 				UpdateGravitySimSettings();
 
 				RunSimulationStep();
@@ -403,19 +413,24 @@ namespace Seb.Fluid.Simulation
 
 		void UpdateGravitySimSettings()
 		{
-			celestialBodyBuffer.SetData(gravitySim.bodies);
-			compute.SetVector("relativeAcc", gravitySim.relativeAcc);
-			compute.SetBool("useRelativeAcc", gravitySim.relative);
-			compute.SetBool("firstBodyUseSDF", useEarthSDF);
-			compute.SetBool("useGravSim", useGravSim);
-			compute.SetFloat("sdfCollisionSkin", sdfCollisionSkin);
+            compute.SetBool("firstBodyUseSDF", useEarthSDF);
+            compute.SetBool("useGravSim", useGravSim);
+            compute.SetBool("boundToSDF", boundToSDF);
+            compute.SetFloat("sdfCollisionSkin", sdfCollisionSkin);
+            if (useGravSim)
+			{
+				celestialBodyBuffer.SetData(gravitySim.bodies);
+				compute.SetVector("relativeAcc", gravitySim.relativeAcc);
+				compute.SetBool("useRelativeAcc", gravitySim.relative);
+			}
+			
 
 			// Body 0
 			if (terraformTest)
 			{
 				compute.SetMatrix("planetWorldToLocal", Matrix4x4.identity);
 			}
-			else
+            else if (useGravSim)
 			{
 				Transform body0 = gravitySim.PlanetDisplay.body;
 				compute.SetMatrix("planetWorldToLocal", body0.worldToLocalMatrix);

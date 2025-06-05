@@ -105,6 +105,7 @@ static const float GravitationalConstant = 1;
 const bool firstBodyUseSDF;
 const bool useRelativeAcc;
 const bool useGravSim;
+const bool boundToSDF;
 
 float3 GravitationalAccelerationAtPoint(float3 pos, uint ignoreSelfBodyIndex)
 {
@@ -187,6 +188,32 @@ void ResolveCollisionsSDF(inout float3 pos, inout float3 vel, float collisionDam
             vel *= collisionDamping;
         }
     }
+    
+    
+}
+
+void ResolveCollisionBounds(inout float3 pos, inout float3 vel, float collisionDamping)
+{
+    float3 posLocal = mul(planetWorldToLocal, float4(pos.xyz, 1)).xyz;
+    const float3 halfSize = sdfWorldSize / 2;
+    const float3 edgeDst = halfSize - abs(pos);
+    
+    
+    if (edgeDst.x <= 0)
+    {
+        pos.x = halfSize.x * sign(posLocal.x);
+        vel.x *= -1 * collisionDamping;
+    }
+    if (edgeDst.y <= 0)
+    {
+        pos.y = halfSize.y * sign(posLocal.y);
+        vel.y *= -1 * collisionDamping;
+    }
+    if (edgeDst.z <= 0)
+    {
+        pos.z = halfSize.z * sign(posLocal.z);
+        vel.z *= -1 * collisionDamping;
+    }
 }
 
 void ResolveCollisionSphere(CelestialBody body, inout float3 pos, inout float3 vel, float collisionDamping)
@@ -215,6 +242,10 @@ void ResolveCollisions(inout float3 pos, inout float3 vel, float collisionDampin
         if (i == 0 && firstBodyUseSDF)
         {
             ResolveCollisionsSDF(pos, vel, collisionDamping);
+            if (boundToSDF)
+            {
+                ResolveCollisionBounds(pos, vel, collisionDamping);
+            }
         }
         else
         {
